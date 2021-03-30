@@ -1,0 +1,45 @@
+loaders:
+  - type: python
+    search_path: [gbatchexecute]
+    ignore_when_discovered: [__init__]
+
+renderer:
+  type: markdown
+
+  markdown:
+    source_linker:
+      type: github
+      repo: pndurette/gbatchexecute
+  
+  render_toc: true
+  filename: README.md
+
+# Custom YAML header and footer fields
+# that get read and injected by $.hooks.post-render
+
+hooks:
+  post-render:
+    - |
+      python - <<-EOF
+      import yaml
+      with open("pydoc-markdown.yaml") as f:
+        conf = yaml.safe_load(f)
+        header = conf["main_header"]
+        footer = conf["main_footer"]
+      with open ("README.md", "r+") as f:
+        readme = f.read()
+        f.seek(0)
+        f.write(header + "\n")
+        f.write(readme + "\n")
+        f.write(footer)
+      EOF
+
+# Custom field
+main_header: |
+  # Hello
+
+  This is a test
+
+# Custom field
+main_footer: |
+  # The end
