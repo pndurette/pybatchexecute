@@ -36,9 +36,9 @@ hooks:
 
 # Custom field
 main_header: |
-  # Hello
+  # gbatchexecute
 
-  This is a test
+  > Python module to ease interactions with Google's batchexecute batch RPC system"
 
 # Custom field
 main_footer: |

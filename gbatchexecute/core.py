@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*
 from dataclasses import dataclass
 from urllib.parse import quote, urlencode
-from typing import List
+from typing import List, Tuple
+import random
 import json
 import re
 
@@ -12,31 +13,49 @@ class gBatchPayload:
     args: list
 
 
-class gBatchExecuteException(Exception):
-    pass
-
-
-class gBatchExecuteDecodeException(gBatchExecuteException):
-    pass
-
-
 class gBatchExecute:
+    """gBatchExecute -- Construct
+
+    An interface to Google Translate's Text-to-Speech API.
+
+    Args:
+        text (string): The text to be read.
+
+    Raises:
+        ValueError: When ``lang_check`` is ``True`` and ``lang`` is not supported.
+        RuntimeError: When ``lang_check`` is ``True`` but there's an error loading
+            the languages dictionary.
+
+    """
+
+    REQ_PARAMS = ["rpcids", "rt", "_reqid"]
+    OPT_PARAMS = ["f.sid", "bl", "hl"]
+    REQ_DATA = ["f.req"]
+    OPT_DATA = ["at"]
+
     def __init__(
         self,
         payload: List[gBatchPayload],
-        url=None,
-        host=None,
-        user=None,
-        app=None,
-        query: dict = None,
+        url: str = "",
+        host: str = "",
+        user: str = "",
+        app: str = "",
+        params: dict = {},
         reqid: int = 0,
         idx: int = 1,
-        **kwargs,
+        data: dict = {},
+        headers: dict = {},
     ) -> None:
 
-        # TODO: Handle extra optionals w/ **kwargs
+        # payload
+        if isinstance(payload, list):
+            self.payload = payload
+        else:
+            self.payload = [payload]
 
+        # url
         if not url:
+            assert app, "Need app"
             if not user:
                 self.url = f"https://{host}/_/{app}/data/batchexecute"
             else:
@@ -44,67 +63,86 @@ class gBatchExecute:
         else:
             self.url = url
 
-        if isinstance(payload, list):
-            self.payload = payload
+        # params
+        if reqid:
+            assert 0 < reqid < 99999, "'reqid' must be in the 1-99999 range"
         else:
-            self.payload = [payload]
+            reqid = random.randrange(1, 99999)
 
-        if not query:
-            assert 0 < reqid < 99999, "reqid must be in the 0-99999 range"
-            assert idx > 0, "idx must be great than 0"
-            self.query = self._query(reqid, idx)
-        else:
-            self.query = query
+        assert idx > 0, "idx must be great than 0"
+        self.params = {**self._base_params(reqid, idx), **params}
 
-        self.data = self._data()
+        # data
+        self.data = {**self._base_data(), **data}
 
-        self.headers = self._headers()
+        # headers
+        self.headers = {**self._base_headers(), **headers}
 
-    def _query(self, reqid, idx) -> dict:
-        """Do the TTS API request and write bytes to a file-like object.
+    @property
+    def url(self) -> str:
 
-        Args:
-            fp (file object): Any file-like object to write the ``mp3`` to.
+        return self._url
 
-        Raises:
-            :class:`gTTSError`: When there's an error with the API request.
-            TypeError: When ``fp`` is not a file-like object that takes bytes.
+    @url.setter
+    def url(self, url: str) -> None:
 
-        """
+        self._url = url
 
-        # TODO: Clean optionals
+    @property
+    def params(self) -> dict:
 
-        query = {
-            # Comma-deleted string of all unique rpcids
+        return self._params
+
+    @params.setter
+    def params(self, params: dict) -> None:
+
+        for k in self.REQ_PARAMS:
+            assert params[k], f"params is missing key '${key}'"
+
+        self._params = params
+
+    def _base_params(self, reqid: int, idx: int) -> dict:
+
+        return {
             "rpcids": ",".join(set([p.rpcid for p in self.payload])),
-            # Response type. Always 'c'.
             "rt": "c",
-            # 5-character
             "_reqid": reqid + (idx * 100000),
-            # Optionals:
-            # Signed 64-bit integer consistant for a single page load
-            # e.g. 6781970813608854611
-            # 'f.sid': 0,
-            # Name and version of the backend software handling the requests
-            # e.g. 'boq_translate-webserver_20210217.12_p0'
-            #'bl': '',
-            # 2-character ISO 639–1 language code the UI is in
-            # e.g. 'en'
-            # 'hl': '',
         }
 
-        return urlencode(query)
+    @property
+    def data(self) -> dict:
 
-    def _data(self, at: str = None):
-        # TODO: at (for auth)
-        # TODO: return urlencode
+        return self._data
 
-        data = {"f.req": self._freq()}
+    @data.setter
+    def data(self, data: dict) -> None:
 
-        return data
-        # return urlencode(data)
+        for k in self.REQ_DATA:
+            assert data[k], f"data is missing key '${key}'"
 
-    def _freq(self):
+        self._data = data
+
+    def _base_data(self) -> dict:
+
+        return {"f.req": self._freq()}
+
+    @property
+    def headers(self) -> dict:
+
+        return self._headers
+
+    @headers.setter
+    def headers(self, headers: dict):
+
+        self._headers = headers
+
+    def _base_headers(self) -> dict:
+
+        return {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+        }
+
+    def _freq(self) -> str:
 
         freq = []
 
@@ -118,7 +156,7 @@ class gBatchExecute:
         freq = [freq]
         return json.dumps(freq, separators=(",", ":"))
 
-    def _envelope(self, payload: gBatchPayload, idx: int = 0):
+    def _envelope(self, payload: gBatchPayload, idx: int = 0) -> list:
 
         return [
             payload.rpcid,
@@ -127,14 +165,9 @@ class gBatchExecute:
             str(idx) if idx > 0 else "generic",
         ]
 
-    def _headers(self):
-        # TODO: Cookie (for auth)
-
-        return {
-            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-        }
-
-    def decode(self, raw: str, charset: str = None, strict: bool = False):
+    def decode(
+        self, raw: str, charset: str = None, strict: bool = False
+    ) -> List[Tuple[int, str, list]]:
 
         # Regex pattern to extract raw data responses (frames)
         p = re.compile(
@@ -211,3 +244,11 @@ class gBatchExecute:
 https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c
 https://github.com/Boudewijn26/gTTS-token/blob/master/docs/november-2020-translate-changes.md
 """
+
+
+class gBatchExecuteException(Exception):
+    pass
+
+
+class gBatchExecuteDecodeException(gBatchExecuteException):
+    pass
