@@ -55,7 +55,8 @@ class gBatchExecute:
 
         # url
         if not url:
-            assert app, "Need app"
+            assert host, "'host' is required if 'url' is ommited"
+            assert app, "'app' is required if 'url' is ommited"
             if not user:
                 self.url = f"https://{host}/_/{app}/data/batchexecute"
             else:
@@ -97,7 +98,7 @@ class gBatchExecute:
     def params(self, params: dict) -> None:
 
         for k in self.REQ_PARAMS:
-            assert params[k], f"params is missing key '${key}'"
+            assert params.get(k), f"params is missing key '{k}'"
 
         self._params = params
 
@@ -118,7 +119,7 @@ class gBatchExecute:
     def data(self, data: dict) -> None:
 
         for k in self.REQ_DATA:
-            assert data[k], f"data is missing key '${key}'"
+            assert data.get(k), f"data is missing key '{k}'"
 
         self._data = data
 
@@ -146,23 +147,23 @@ class gBatchExecute:
 
         freq = []
 
-        for idx, p in enumerate(self.payload, start=1):
+        for payload_idx, p in enumerate(self.payload, start=1):
 
             if len(self.payload) == 1:
-                idx = 0
+                payload_idx = 0
 
-            freq.append(self._envelope(p, idx))
+            freq.append(self._envelope(p, payload_idx))
 
         freq = [freq]
         return json.dumps(freq, separators=(",", ":"))
 
-    def _envelope(self, payload: gBatchPayload, idx: int = 0) -> list:
+    def _envelope(self, payload: gBatchPayload, payload_idx: int = 0) -> list:
 
         return [
             payload.rpcid,
             json.dumps(payload.args, separators=(",", ":")),
             None,
-            str(idx) if idx > 0 else "generic",
+            str(payload_idx) if payload_idx > 0 else "generic",
         ]
 
     def decode(
