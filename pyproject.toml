@@ -13,6 +13,20 @@ black = "^20.8b1"
 flake8 = "^3.9.0"
 pydoc-markdown = "^3.10.0"
 pytest = "^6.2.3"
+pytest-cov = "^2.11.1"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--verbose --cov"
+
+[tool.coverage.run]
+source = ["gbatchexecute"]
+omit = ["**/test_*.py"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
