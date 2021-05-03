@@ -166,8 +166,9 @@ class gBatchExecute:
             str(payload_idx) if payload_idx > 0 else "generic",
         ]
 
+    @staticmethod
     def decode(
-        self, raw: str, charset: str = None, strict: bool = False
+        raw: str, strict: bool = False, expected_rpcids: list = []
     ) -> List[Tuple[int, str, list]]:
 
         # Regex pattern to extract raw data responses (frames)
@@ -180,16 +181,12 @@ class gBatchExecute:
             flags=re.DOTALL | re.VERBOSE,
         )
 
-        # TODO Except decode error
-        if charset:
-            raw = raw.decode(charset)
-
         decoded = []
 
         for item in p.finditer(raw):
 
             # A 'frame' group is a json string
-            # e.g.: '[["wrb.fr","jQ1olc","[\"/abc\"]\n",null,null,null,"generic"]]'
+            # e.g.: '[["wrb.fr","jQ1olc","[\"abc\"]\n",null,null,null,"generic"]]'
             #          ^^^^^^^^  ^^^^^^   ^^^^^^^^^^^^                 ^^^^^^^^^
             #          [0][0]    [0][1]   [0][2]                       [0][6]
             #          constant  rpc id   rpc response                 frame index or
@@ -214,29 +211,54 @@ class gBatchExecute:
             # rpcid (at [0][1])
             # rpcid's response (at [0][2], a json string)
             rpcid = frame[0][1]
-            data = json.loads(frame[0][2])
+
+            try:
+                data = json.loads(frame[0][2])
+            except json.decoder.JSONDecodeError as e:
+                raise gBatchExecuteDecodeException(
+                    f"Frame {index} ({rpcid}): data is not a valid JSON string. "
+                    + "JSON decode error was: "
+                    + str(e)
+                )
 
             if strict and data == []:
-                raise gBatchExecuteDecodeException("empty data")
+                raise gBatchExecuteDecodeException(
+                    f"Frame {index} ({rpcid}): data is empty (strict)."
+                )
 
             # Append as tuple
             decoded.append((index, rpcid, data))
+
+        # The regex did not match anything
+        if len(decoded) == 0:
+            raise gBatchExecuteDecodeException(
+                "Could not decode any frames. Check format of 'raw'."
+            )
 
         # Sort responses by index ([0])
         decoded = sorted(decoded, key=lambda frame: frame[0])
 
         if strict:
-            in_rpcids = [p.rpcid for p in self.payload]
-            out_rpcids = [rpcid for rpcid, data in decoded]
+            in_rpcids = expected_rpcids
+            out_rpcids = [rpcid for idx, rpcid, data in decoded]
 
             in_len = len(in_rpcids)
             out_len = len(out_rpcids)
 
-            if in_len != out_len:
-                raise gBatchExecuteDecodeException("in/out not same len")
+            if in_len != out_len: # pragma: no cover
+                raise gBatchExecuteDecodeException(
+                    "Strict: mismatch in/out rcpids numbers, "
+                    + f"expected: {in_len}, got: {out_len}."
+                    )
 
-            if set(in_rpcids) != set(out_rpcids):
-                raise gBatchExecuteDecodeException("items not the same")
+            in_set = sorted(set(in_rpcids))
+            out_set = sorted(set(out_rpcids))
+
+            if in_set != out_set: # pragma: no cover
+                raise gBatchExecuteDecodeException(
+                    "Strict: mismatch in/out rcpids, "
+                    + f"expected: {in_set}, got: {out_set}."
+                    )
 
         return decoded
 
