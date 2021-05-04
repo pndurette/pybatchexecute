@@ -9,22 +9,21 @@ import re
 
 @dataclass
 class gBatchPayload:
+    """A payload for ``batchexecute`` RPCs
+
+    Args:
+        rpcid (string): The RPCid of the function to execute.
+        args (list): A list of arguments to send to the ``rpcid`` function.
+
+    """
+
     rpcid: str
     args: list
 
 
 class gBatchExecute:
-    """gBatchExecute -- Construct
-
-    An interface to Google Translate's Text-to-Speech API.
-
-    Args:
-        text (string): The text to be read.
-
-    Raises:
-        ValueError: When ``lang_check`` is ``True`` and ``lang`` is not supported.
-        RuntimeError: When ``lang_check`` is ``True`` but there's an error loading
-            the languages dictionary.
+    """A class to help with the preparation of Web requests for Google's
+        ``batchexecute`` RPC-type functions and the decoding of its responses
 
     """
 
@@ -46,6 +45,21 @@ class gBatchExecute:
         data: dict = {},
         headers: dict = {},
     ) -> None:
+        """Intereact with ``batchexecute`` RPCs
+
+        Args:
+            payload (List[gBatchPayload]): A list of payloads (gBatchExecute) to send ``batchexecute``.
+            url (string): Something
+            host (string): Something
+            user (string): Something
+            app (string): Something
+            params (dict): Something
+            reqid (int): Something
+            idx (int): Something
+            data (dict): Something
+            headers (dict): Something
+
+        """
 
         # payload
         if isinstance(payload, list):
@@ -81,21 +95,25 @@ class gBatchExecute:
 
     @property
     def url(self) -> str:
+        """Get the full URL of a request"""
 
         return self._url
 
     @url.setter
     def url(self, url: str) -> None:
+        """Set the full URL of a request"""
 
         self._url = url
 
     @property
     def params(self) -> dict:
+        """Get the url request parameters"""
 
         return self._params
 
     @params.setter
     def params(self, params: dict) -> None:
+        """Set the request url parameters"""
 
         for k in self.REQ_PARAMS:
             assert params.get(k), f"params is missing key '{k}'"
@@ -103,6 +121,7 @@ class gBatchExecute:
         self._params = params
 
     def _base_params(self, reqid: int, idx: int) -> dict:
+        """Base predetermined url parameters"""
 
         return {
             "rpcids": ",".join(set([p.rpcid for p in self.payload])),
@@ -112,11 +131,13 @@ class gBatchExecute:
 
     @property
     def data(self) -> dict:
+        """Get the request POST data"""
 
         return self._data
 
     @data.setter
     def data(self, data: dict) -> None:
+        """Set the request POST data"""
 
         for k in self.REQ_DATA:
             assert data.get(k), f"data is missing key '{k}'"
@@ -124,26 +145,31 @@ class gBatchExecute:
         self._data = data
 
     def _base_data(self) -> dict:
+        """Base predetermined POST data of a request"""
 
         return {"f.req": self._freq()}
 
     @property
     def headers(self) -> dict:
+        """Get request headers"""
 
         return self._headers
 
     @headers.setter
     def headers(self, headers: dict):
+        """Set the request headers"""
 
         self._headers = headers
 
     def _base_headers(self) -> dict:
+        """Base predetermined request headers"""
 
         return {
             "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
         }
 
     def _freq(self) -> str:
+        """Build the ``f.req`` POST data parameter from the payloads"""
 
         freq = []
 
@@ -158,6 +184,7 @@ class gBatchExecute:
         return json.dumps(freq, separators=(",", ":"))
 
     def _envelope(self, payload: gBatchPayload, payload_idx: int = 0) -> list:
+        """Build an 'envelope' (frame) of a payload. Used to build ``f.req``"""
 
         return [
             payload.rpcid,
