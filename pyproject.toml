@@ -1,33 +1,26 @@
-[tool.poetry]
+[project]
 name = "gbatchexecute"
-version = "0.1.0"
 description = "Library to ease interactions with Google's batchexecute batch RPC system"
-authors = ["Pierre Nicolas Durette <pndurette@gmail.com>"]
-license = "MIT"
+version = "0.1.0"
+authors = [
+    { name = "Pierre-Nicolas Durette", email = "pndurette@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "MIT"}
 
-[tool.poetry.dependencies]
-python = "^3.6"
+dependencies = []
 
-[tool.poetry.dev-dependencies]
-black = "^20.8b1"
-flake8 = "^3.9.0"
-pydoc-markdown = "^3.10.0"
-pytest = "^6.2.3"
-pytest-cov = "^2.11.1"
+[project.optional-dependencies]
+docs = ["pydoc-markdown ~= 4.6"]
+dev = ["pytest >= 7.1.3,< 7.3.0"]
 
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "--verbose --cov"
-
-[tool.coverage.run]
-source = ["gbatchexecute"]
-omit = ["**/test_*.py"]
-branch = true
-
-[tool.coverage.report]
-show_missing = true
-skip_covered = true
+[project.urls]
+homepage = "https://github.com/pndurette/gbatchexecute"
+documentation = "https://github.com/pndurette/gbatchexecute/blob/main/docs/README.md"
+repository = "https://github.com/pndurette/gbatchexecute"
+changelog = "https://github.com/pndurette/gbatchexecute/blob/main/CHANGELOG.md"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
