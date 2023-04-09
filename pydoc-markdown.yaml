@@ -6,7 +6,7 @@ loaders:
 renderer:
   type: markdown
   
-  filename: api.md
+  filename: docs/README.md
 
   render_toc: true
   render_toc_title: API Reference
@@ -20,13 +20,13 @@ renderer:
   insert_header_anchors: false
   render_module_header: false
 
-hooks:
-  post-render:
-    # Extract README.md till <!--API_REF-->
-    # Append the fresh API docs after (api.md)
-    # Save back to README.md
-    # Clean up
-    - |
-      awk '1; /^<\!--API_REF/{exit}' README.md > tmp.md \
-      && cat tmp.md api.md > README.md \
-      && rm tmp.md api.md
+# hooks:
+#   post-render:
+#     # Extract README.md till <!--API_REF-->
+#     # Append the fresh API docs after (api.md)
+#     # Save back to README.md
+#     # Clean up
+#     - |
+#       awk '1; /^<\!--API_REF/{exit}' README.md > tmp.md \
+#       && cat tmp.md api.md > README.md \
+#       && rm tmp.md api.md
