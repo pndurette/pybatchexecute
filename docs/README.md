@@ -21,11 +21,7 @@
 class BatchExecuteFunction(TypedDict)
 ```
 
-<<<<<<< HEAD
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L8)
-=======
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/791ee222e71eefc4a8c12a20c1a056f54cdb1eea/pybatchexecute/encode.py#L8)
->>>>>>> b0dd6fe (Rename package to pybatchexecute)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L8)
 
 Type hint for a batchexecute function
 
@@ -35,11 +31,7 @@ Type hint for a batchexecute function
 class PreparedBatchExecute(object)
 ```
 
-<<<<<<< HEAD
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L15)
-=======
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/791ee222e71eefc4a8c12a20c1a056f54cdb1eea/pybatchexecute/encode.py#L15)
->>>>>>> b0dd6fe (Rename package to pybatchexecute)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L15)
 
 A prepared ``batchexecute`` RPC
 
@@ -65,11 +57,7 @@ def __init__(functions: List[BatchExecuteFunction],
              rt: str = None) -> None
 ```
 
-<<<<<<< HEAD
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L30)
-=======
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/791ee222e71eefc4a8c12a20c1a056f54cdb1eea/pybatchexecute/encode.py#L30)
->>>>>>> b0dd6fe (Rename package to pybatchexecute)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L30)
 
 Prepare a ``batchexecute`` RPC
 
@@ -118,11 +106,7 @@ for more information.
 def headers() -> dict
 ```
 
-<<<<<<< HEAD
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L92)
-=======
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/791ee222e71eefc4a8c12a20c1a056f54cdb1eea/pybatchexecute/encode.py#L92)
->>>>>>> b0dd6fe (Rename package to pybatchexecute)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L92)
 
 Get request headers
 
@@ -133,11 +117,7 @@ Get request headers
 def functions() -> List[BatchExecuteFunction]
 ```
 
-<<<<<<< HEAD
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L99)
-=======
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/791ee222e71eefc4a8c12a20c1a056f54cdb1eea/pybatchexecute/encode.py#L99)
->>>>>>> b0dd6fe (Rename package to pybatchexecute)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L99)
 
 Get the functions to be called
 
@@ -148,11 +128,7 @@ Get the functions to be called
 def functions(functions: List[BatchExecuteFunction]) -> None
 ```
 
-<<<<<<< HEAD
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L104)
-=======
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/791ee222e71eefc4a8c12a20c1a056f54cdb1eea/pybatchexecute/encode.py#L104)
->>>>>>> b0dd6fe (Rename package to pybatchexecute)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L104)
 
 Set the functions to be called
 
@@ -163,11 +139,7 @@ Set the functions to be called
 def url() -> str
 ```
 
-<<<<<<< HEAD
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L117)
-=======
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/791ee222e71eefc4a8c12a20c1a056f54cdb1eea/pybatchexecute/encode.py#L117)
->>>>>>> b0dd6fe (Rename package to pybatchexecute)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L117)
 
 Get the URL
 
@@ -178,11 +150,7 @@ Get the URL
 def reqid() -> int
 ```
 
-<<<<<<< HEAD
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L125)
-=======
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/791ee222e71eefc4a8c12a20c1a056f54cdb1eea/pybatchexecute/encode.py#L125)
->>>>>>> b0dd6fe (Rename package to pybatchexecute)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L125)
 
 Get the request ID
 
@@ -193,7 +161,7 @@ Get the request ID
 def reqid(reqid) -> None
 ```
 
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L130)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L130)
 
 Set the request ID
 
@@ -204,7 +172,7 @@ Set the request ID
 def params() -> dict
 ```
 
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L140)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L140)
 
 Build the URL parameters for a ``batchexecute`` RPC
 
@@ -215,7 +183,7 @@ Build the URL parameters for a ``batchexecute`` RPC
 def data() -> dict
 ```
 
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/encode.py#L154)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L154)
 
 Build the POST data for a ``batchexecute`` RPC
 
@@ -250,7 +218,7 @@ def decode(raw: str,
            expected_rpcids: list = [])
 ```
 
-[[view_source]](https://github.com/pndurette/gbatchexecute/blob/1ec80e3fcb51ed05aba92dcefb30515e49ad4ddc/gbatchexecute/decode.py#L194)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/decode.py#L194)
 
 Decode a raw response from a ``batchexecute`` RPC
 
