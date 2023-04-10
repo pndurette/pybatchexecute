@@ -3,7 +3,7 @@ name = "gbatchexecute"
 description = "Library to ease interactions with Google's batchexecute batch RPC system"
 version = "0.1.0"
 authors = [
-    { name = "Pierre-Nicolas Durette", email = "pndurette@gmail.com" }
+    { name = "Pierre Nicolas Durette", email = "pndurette@gmail.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.6"
