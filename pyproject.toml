@@ -1,7 +1,7 @@
 [project]
 name = "pybatchexecute"
 description = "Library to ease interactions with Google's batchexecute batch RPC system"
-version = "0.1.0"
+version = "1.0.0"
 authors = [
     { name = "Pierre Nicolas Durette", email = "pndurette@gmail.com" }
 ]
