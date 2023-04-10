@@ -4,8 +4,7 @@ The `rt` parameter[^1] can be used to specify the response format. The following
 
 ## No `rt` parameter
 
-The response is a JSON array (minus the initial `)]}'`)
-See: [`_decode_rt_default()`](../pybatchexecute/decode.py)
+The response is a JSON array (minus the initial `)]}'`). See: [`_decode_rt_default()`](../pybatchexecute/decode.py)
 
 **Example:**
 
@@ -40,8 +39,7 @@ See: [`_decode_rt_default()`](../pybatchexecute/decode.py)
 
 ## `rt` set to `c`
 
-This is the default response format made from Google's own websites.
-See: [`_decode_rt_compressed()`](../pybatchexecute/decode.py)
+This is the default response format made from Google's own websites. See: [`_decode_rt_compressed()`](../pybatchexecute/decode.py)
 
 **Example:**
 
