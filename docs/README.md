@@ -1,12 +1,12 @@
 # API Reference
 
 * [encode](#encode)
-  * [BatchExecuteFunction](#encode.BatchExecuteFunction)
+  * [BatchExecuteRpc](#encode.BatchExecuteRpc)
   * [PreparedBatchExecute](#encode.PreparedBatchExecute)
     * [\_\_init\_\_](#encode.PreparedBatchExecute.__init__)
     * [headers](#encode.PreparedBatchExecute.headers)
-    * [functions](#encode.PreparedBatchExecute.functions)
-    * [functions](#encode.PreparedBatchExecute.functions)
+    * [rpcs](#encode.PreparedBatchExecute.rpcs)
+    * [rpcs](#encode.PreparedBatchExecute.rpcs)
     * [url](#encode.PreparedBatchExecute.url)
     * [reqid](#encode.PreparedBatchExecute.reqid)
     * [reqid](#encode.PreparedBatchExecute.reqid)
@@ -15,15 +15,15 @@
 * [decode](#decode)
   * [decode](#decode.decode)
 
-## BatchExecuteFunction
+## BatchExecuteRpc
 
 ```python
-class BatchExecuteFunction(TypedDict)
+class BatchExecuteRpc(TypedDict)
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L8)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L8)
 
-Type hint for a batchexecute function
+Type hint for a batchexecute RPC
 
 ## PreparedBatchExecute
 
@@ -31,7 +31,7 @@ Type hint for a batchexecute function
 class PreparedBatchExecute(object)
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L15)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L15)
 
 A prepared ``batchexecute`` RPC
 
@@ -48,7 +48,7 @@ which can be used to send a POST request using any HTTP library.
 #### \_\_init\_\_
 
 ```python
-def __init__(functions: List[BatchExecuteFunction],
+def __init__(rpcs: List[BatchExecuteRpc],
              host: str,
              app: str,
              user: str = None,
@@ -57,9 +57,9 @@ def __init__(functions: List[BatchExecuteFunction],
              rt: str = None) -> None
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L30)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L30)
 
-Prepare a ``batchexecute`` RPC
+Prepare a ``batchexecute`` request
 
 _The URL_: The URL is built from the ``host``, ``app``, and ``user`` parameters
 (each parameter can be obtained by inspecting an existing request):
@@ -80,9 +80,9 @@ for more information.
 
 **Arguments**:
 
-- `functions` _list_ - A list of functions to execute. Each function is a dictionary with 2 keys:
-  * ``rpcid``: The ``rpcid`` of the function to execute
-  * ``args``: A list of arguments to pass to the function
+- `rpcs` _list_ - A list of rpcs to execute. Each RPC is a dictionary with 2 keys:
+  * ``rpcid``: The ``rpcid`` of the RPC to execute
+  * ``args``: A list of arguments to pass to the RPC
 - `host` _str_ - The host to send the request to
 - `app` _str_ - The app to send the request to
 - `user` _str_ - The user to send the request to (default: ``None``)
@@ -97,7 +97,7 @@ for more information.
 **Raises**:
 
 - `ValueError` - If ``reqid`` is not a four digit number
-- `ValueError` - If any function is of an invalid format
+- `ValueError` - If any RPC is of an invalid format
 
 #### headers
 
@@ -106,31 +106,31 @@ for more information.
 def headers() -> dict
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L92)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L92)
 
 Get request headers
 
-#### functions
+#### rpcs
 
 ```python
 @property
-def functions() -> List[BatchExecuteFunction]
+def rpcs() -> List[BatchExecuteRpc]
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L99)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L99)
 
-Get the functions to be called
+Get the rpcs to be called
 
-#### functions
+#### rpcs
 
 ```python
-@functions.setter
-def functions(functions: List[BatchExecuteFunction]) -> None
+@rpcs.setter
+def rpcs(rpcs: List[BatchExecuteRpc]) -> None
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L104)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L104)
 
-Set the functions to be called
+Set the rpcs to be called
 
 #### url
 
@@ -139,7 +139,7 @@ Set the functions to be called
 def url() -> str
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L117)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L117)
 
 Get the URL
 
@@ -150,7 +150,7 @@ Get the URL
 def reqid() -> int
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L125)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L125)
 
 Get the request ID
 
@@ -161,7 +161,7 @@ Get the request ID
 def reqid(reqid) -> None
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L130)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L130)
 
 Set the request ID
 
@@ -172,7 +172,7 @@ Set the request ID
 def params() -> dict
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L140)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L140)
 
 Build the URL parameters for a ``batchexecute`` RPC
 
@@ -183,7 +183,7 @@ Build the URL parameters for a ``batchexecute`` RPC
 def data() -> dict
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/encode.py#L154)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/encode.py#L154)
 
 Build the POST data for a ``batchexecute`` RPC
 
@@ -193,12 +193,12 @@ which looks like, as stringified JSON:
 
 ```
 [ # Outer array
-    [ # List of functions
-        [ # Function 'envelope'
-            "<function rpcid>",
-            "<function args stringified JSON>",
+    [ # List of rpcs
+        [ # RPC 'envelope'
+            "<RPC rpcid>",
+            "<RPC args stringified JSON>",
             null,
-            "<index of function or 'generic'>"
+            "<index of RPC or 'generic'>"
         ],
         [...]
     ]
@@ -218,7 +218,7 @@ def decode(raw: str,
            expected_rpcids: list = [])
 ```
 
-[[view_source]](https://github.com/pndurette/pybatchexecute/blob/da15db31aa92ab31e5502ac8a06c3153427712d1/pybatchexecute/decode.py#L194)
+[[view_source]](https://github.com/pndurette/pybatchexecute/blob/f45c1272386b8e20098c7d3ddba019a91f772c81/pybatchexecute/decode.py#L194)
 
 Decode a raw response from a ``batchexecute`` RPC
 
