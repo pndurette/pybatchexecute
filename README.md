@@ -1,6 +1,6 @@
 # pybatchexecute
 
-> Python package to ease interactions with Google's `batchexecute` batch RPC system. It assists in preparing requests for it and decoding the response.
+> Python package to ease interactions with Google's `batchexecute` batch RPC system. It assists in preparing requests for it and decoding responses returned from it.
 
 This package codifies the research of Ryan Kovatch[^1] and Boudewijn van Groos[^2] about Google's `/batchexecute` endpoint used accross Google Web applications.
 
