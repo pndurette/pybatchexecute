@@ -17,7 +17,7 @@ test = ["pytest >= 7.1.3,< 7.4.0"]
 
 [project.urls]
 homepage = "https://github.com/pndurette/pybatchexecute"
-documentation = "https://github.com/pndurette/pybatchexecute/blob/main/docs/README.md"
+documentation = "https://github.com/pndurette/pybatchexecute/blob/main/docs/"
 repository = "https://github.com/pndurette/pybatchexecute"
 changelog = "https://github.com/pndurette/pybatchexecute/blob/main/CHANGELOG.md"
 
