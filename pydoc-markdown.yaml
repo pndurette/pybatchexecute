@@ -1,7 +1,7 @@
 loaders:
   - type: python
     search_path: [gbatchexecute]
-    ignore_when_discovered: [__init__, test_core]
+    ignore_when_discovered: [ __init__, test_encode, test_decode]
 
 renderer:
   type: markdown
@@ -19,14 +19,3 @@ renderer:
   descriptive_class_title: false
   insert_header_anchors: false
   render_module_header: false
-
-# hooks:
-#   post-render:
-#     # Extract README.md till <!--API_REF-->
-#     # Append the fresh API docs after (api.md)
-#     # Save back to README.md
-#     # Clean up
-#     - |
-#       awk '1; /^<\!--API_REF/{exit}' README.md > tmp.md \
-#       && cat tmp.md api.md > README.md \
-#       && rm tmp.md api.md
