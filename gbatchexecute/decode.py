@@ -5,7 +5,7 @@ from typing import List, Tuple
 __all__ = ["decode"]
 
 
-class gBatchExecuteDecodeException(Exception):
+class BatchExecuteDecodeException(Exception):
     pass
 
 
@@ -21,13 +21,13 @@ def _decode_rt_compressed(
 
         <lenght (int of bytes) of envelope 0>
         <envelope 0>
-        [...]
-        [<lenght (int of bytes) of envelope n>]
-        [<envelope n>]
+        <...>
+        <lenght (int of bytes) of envelope n>
+        <envelope n>
 
-    Envelopes are JSON strings of the form (e.g.)::
+    Envelopes are a JSON array wrapped in an array, of the form (e.g.)::
 
-        [["wrb.fr","jQ1olc","[\"abc\"]\n",null,null,null,"generic"]]'
+        [["wrb.fr","jQ1olc","[\"abc\"]\n",null,null,null,"generic"]]
           ^^^^^^^^  ^^^^^^   ^^^^^^^^^^^^                 ^^^^^^^^^
           [0][0]    [0][1]   [0][2]                       [0][6]
           constant  rpc id   rpc response                 envelope index or
@@ -44,8 +44,8 @@ def _decode_rt_compressed(
             data (list): The decoded JSON data of the response
 
     Raises:
-        gBatchExecuteDecodeException: If any response data is not a valid JSON string
-        gBatchExecuteDecodeException: If any response data is empty (if ``strict`` is ``True``)
+        BatchExecuteDecodeException: If any response data is not a valid JSON string
+        BatchExecuteDecodeException: If any response data is empty (if ``strict`` is ``True``)
 
     """
 
@@ -92,14 +92,14 @@ def _decode_rt_compressed(
         try:
             data = json.loads(envelope[0][2])
         except json.decoder.JSONDecodeError as e:
-            raise gBatchExecuteDecodeException(
+            raise BatchExecuteDecodeException(
                 f"Envelope {index} ({rpcid}): data is not a valid JSON string. "
                 + "JSON decode error was: "
                 + str(e)
             )
 
         if strict and data == []:
-            raise gBatchExecuteDecodeException(
+            raise BatchExecuteDecodeException(
                 f"Envelope {index} ({rpcid}): data is empty (strict)."
             )
 
@@ -113,22 +113,20 @@ def _decode_rt_default(raw: str, strict: bool = False) -> List[Tuple[int, str, l
     """Decode a raw response from a ``batchexecute`` RPC
     made with no ``rt`` (response type) value
 
-    Raw responses are of the form::
+    Raw response is a JSON array (minus the first two lines) of the form::
 
         )]}'
 
-        <envelope 0>
-        [...]
-        [<envelope n>]
+        [<envelope 0>,<...>,<envelope n>]
 
-    Envelopes are JSON strings of the form (e.g.)::
+    Envelopes are a JSON arrat of the form (e.g.)::
 
-        [["wrb.fr","jQ1olc","[\"abc\"]\n",null,null,null,"generic"]]'
-          ^^^^^^^^  ^^^^^^   ^^^^^^^^^^^^                 ^^^^^^^^^
-          [0][0]    [0][1]   [0][2]                       [0][6]
-          constant  rpc id   rpc response                 envelope index or
-          (str)     (str)    (json str)                   "generic" if single envelope
-                                                          (str)
+        ["wrb.fr","jQ1olc","[\"abc\"]\n",null,null,null,"generic"]
+         ^^^^^^^^  ^^^^^^   ^^^^^^^^^^^^                 ^^^^^^^^^
+         [0][0]    [0][1]   [0][2]                       [0][6]
+         constant  rpc id   rpc response                 envelope index or
+         (str)     (str)    (json str)                   "generic" if single envelope
+                                                         (str)
 
 
     Args:
@@ -141,8 +139,8 @@ def _decode_rt_default(raw: str, strict: bool = False) -> List[Tuple[int, str, l
             data (list): The decoded JSON data of the response
 
     Raises:
-        gBatchExecuteDecodeException: If any response data is not a valid JSON string
-        gBatchExecuteDecodeException: If any response data is empty (if ``strict`` is ``True``)
+        BatchExecuteDecodeException: If any response data is not a valid JSON string
+        BatchExecuteDecodeException: If any response data is empty (if ``strict`` is ``True``)
 
     """
 
@@ -176,14 +174,14 @@ def _decode_rt_default(raw: str, strict: bool = False) -> List[Tuple[int, str, l
         try:
             data = json.loads(envelope[2])
         except json.decoder.JSONDecodeError as e:
-            raise gBatchExecuteDecodeException(
+            raise BatchExecuteDecodeException(
                 f"Envelope {index} ({rpcid}): data is not a valid JSON string. "
                 + "JSON decode error was: "
                 + str(e)
             )
 
         if strict and data == []:
-            raise gBatchExecuteDecodeException(
+            raise BatchExecuteDecodeException(
                 f"Envelope {index} ({rpcid}): data is empty (strict)."
             )
 
@@ -216,9 +214,9 @@ def decode(raw: str, rt: str = None, strict: bool = False, expected_rpcids: list
 
     Raises:
         ValueError: If ``rt`` is not ``"c"``, ``"b"``, or ``None``
-        gBatchExecuteDecodeException: If the count of input and output ``rpcid``s is different
+        atchExecuteDecodeException: If the count of input and output ``rpcid``s is different
             (if ``strict`` is ``True``)
-        gBatchExecuteDecodeException: If the input and out ``rpcid``s are different
+        BatchExecuteDecodeException: If the input and out ``rpcid``s are different
             (if ``strict`` is ``True``)
 
     """
@@ -233,7 +231,7 @@ def decode(raw: str, rt: str = None, strict: bool = False, expected_rpcids: list
 
     # Nothing was decoded
     if len(decoded) == 0:
-        raise gBatchExecuteDecodeException(
+        raise BatchExecuteDecodeException(
             "Could not decode any envelope. Check format of 'raw'."
         )
 
@@ -247,8 +245,8 @@ def decode(raw: str, rt: str = None, strict: bool = False, expected_rpcids: list
         in_len = len(in_rpcids)
         out_len = len(out_rpcids)
 
-        if in_len != out_len:  # pragma: no cover
-            raise gBatchExecuteDecodeException(
+        if in_len != out_len:
+            raise BatchExecuteDecodeException(
                 "Strict: mismatch in/out rcpids count, "
                 + f"expected: {in_len}, got: {out_len}."
             )
@@ -256,8 +254,8 @@ def decode(raw: str, rt: str = None, strict: bool = False, expected_rpcids: list
         in_set = sorted(set(in_rpcids))
         out_set = sorted(set(out_rpcids))
 
-        if in_set != out_set:  # pragma: no cover
-            raise gBatchExecuteDecodeException(
+        if in_set != out_set:
+            raise BatchExecuteDecodeException(
                 "Strict: mismatch in/out rcpids, "
                 + f"expected: {in_set}, got: {out_set}."
             )
