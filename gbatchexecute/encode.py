@@ -19,12 +19,11 @@ class PreparedBatchExecute(object):
     It provides the URL, URL parameters, headers and POST data for the request,
     which can be used to send a POST request using any HTTP library.
 
-    Properties:
-        functions (list): The functions to be called
-        url (str): The URL to send the request to
-        params (dict): The URL parameters to send with the request
-        data (dict): The POST data to send with the request
-        headers (dict): The request headers to send with the request
+    **Properties**:
+      * ``url`` _str_ - The URL to send the request to
+      * ``params`` _dict_ - The URL parameters to send with the request
+      * ``data`` _dict_ - The POST data to send with the request
+      * ``headers`` _dict_ -  The request headers to send with the request
 
     """
 
@@ -40,15 +39,27 @@ class PreparedBatchExecute(object):
     ) -> None:
         """Prepare a ``batchexecute`` RPC
 
-        The URL is built from the ``host``, ``app``, and ``user`` parameters
+        _The URL_: The URL is built from the ``host``, ``app``, and ``user`` parameters
         (each parameter can be obtained by inspecting an existing request):
         ``https://{host}/_/{app}/data/batchexecute`` or
         ``https://{host}/u/{user}/_/{app}/data/batchexecute`` (if ``user`` is not ``None``)
 
+        _Notes about ``reqid`` and ``index``_:
+        The ``_reqid`` parameter is calculated from the ``reqid`` and ``index`` parameters.
+        It is meant for when many ``PreparedBatchExecute`` are prepared to be sent sequentially:
+        each prepared request should have an incremental ``index`` and use the same ``reqid``.
+        It is calculated as ``reqid + (index * 100000)`` (four digits, with ``100000`` added
+        onto it with each subsequent request, e.g. ``1234`` , ``101234`` , ``201234``, etc.)
+
+        _Notes about ``rt``_:
+        The ``rt`` parameter defines the response. It can be ``"c"`` (compressed),
+        ``"b"`` (ProtoBuf), or ``None`` (JSON-ish). See [``decode`` module methods](#decode)
+        for more information.
+
         Args:
             functions (list): A list of functions to execute. Each function is a dictionary with 2 keys:
-                rpcid: The ``rpcid`` of the function to execute
-                args: A list of arguments to pass to the function
+                * ``rpcid``: The ``rpcid`` of the function to execute
+                * ``args``: A list of arguments to pass to the function
             host (str): The host to send the request to
             app (str): The app to send the request to
             user (str): The user to send the request to (default: ``None``)
@@ -127,15 +138,7 @@ class PreparedBatchExecute(object):
 
     @property
     def params(self) -> dict:
-        """Build the URL parameters for a ``batchexecute`` RPC
-
-        The ``_reqid`` parameter is calculated from the ``reqid`` and ``index`` parameters.
-        It is meant for when many ``PreparedBatchExecute`` are prepared to be sent sequentially:
-        each prepared request should have an incremental ``index`` and use the same ``reqid``.
-        It is calculated as ``reqid + (index * 100000)`` (four digits, with ``100000`` added
-        onto it with each subsequent request, e.g. ``1234`` , ``101234`` , ``201234``, etc.)
-
-        """
+        """Build the URL parameters for a ``batchexecute`` RPC"""
 
         params = {
             "rpcids": ",".join(set([fct["rpcid"] for fct in self.functions])),
@@ -153,17 +156,20 @@ class PreparedBatchExecute(object):
 
         The data is a dictionary with a single key ``f.req``,
         which looks like, as stringified JSON:
+
+        ```
         [ # Outer array
             [ # List of functions
                 [ # Function 'envelope'
                     "<function rpcid>",
-                    "<function args>",
+                    "<function args stringified JSON>",
                     null,
                     "<index of function or 'generic'>"
                 ],
                 [...]
             ]
         ]
+        ```
 
         Returns:
             dict: The POST data
@@ -175,8 +181,8 @@ class PreparedBatchExecute(object):
 
             Args:
                 function (dict): A dictionary with 2 keys:
-                    rpcid: The ``rpcid`` of the function to execute
-                    args: A list of arguments to pass to the function
+                    * ``rpcid``: The ``rpcid`` of the function to execute
+                    * ``args``: A list of arguments to pass to the function
                 function_idx (int): The index of the function in the list of functions
 
             Returns:

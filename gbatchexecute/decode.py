@@ -195,26 +195,23 @@ def decode(raw: str, rt: str = None, strict: bool = False, expected_rpcids: list
     """Decode a raw response from a ``batchexecute`` RPC
 
     Args:
-        raw (str): The raw response from a ``batchexecute`` RPC
-        rt (str): The ``rt`` parameter used in the ``batchexecute`` RPC
-            (default: ``None``)
+        raw (str): The raw response text from a ``batchexecute`` RPC
+        rt (str): The ``rt`` parameter used in the ``batchexecute`` RPC (default: ``None``)
         strict (bool): Whether to raise an exception if the response is empty
-            or the input ``rpcid``s are different from the output ``rpcid``s
-            (default: ``False``)
-
+            or the input ``rpcid``s are different from the output ``rpcid``s (default: ``False``)
         expected_rpcids (list): A list of expected ``rpcid`` values,
-            ignored if ``strict`` is ``False``
-            (default: ``[]``)
+            ignored if ``strict`` is ``False`` (default: ``[]``)
 
     Returns:
         list: A list of tuples, each tuple containing:
-            index (int): The index of the response
-            rpcid (str): The ``rpcid`` of the response
-            data (list): The data returned by the ``rpcid`` function
+            * ``index`` (int): The index of the response
+            * ``rpcid`` (str): The ``rpcid`` of the response
+            * ``data`` (list): The JSON data returned by the ``rpcid`` function
 
     Raises:
         ValueError: If ``rt`` is not ``"c"``, ``"b"``, or ``None``
-        atchExecuteDecodeException: If the count of input and output ``rpcid``s is different
+        BatchExecuteDecodeException: If nothing could be decoded
+        BatchExecuteDecodeException: If the count of input and output ``rpcid``s is different
             (if ``strict`` is ``True``)
         BatchExecuteDecodeException: If the input and out ``rpcid``s are different
             (if ``strict`` is ``True``)
