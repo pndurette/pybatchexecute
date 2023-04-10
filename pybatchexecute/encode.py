@@ -5,8 +5,8 @@ from typing import List, TypedDict
 __all__ = ["PreparedBatchExecute"]
 
 
-class BatchExecuteFunction(TypedDict):
-    """Type hint for a batchexecute function"""
+class BatchExecuteRpc(TypedDict):
+    """Type hint for a batchexecute RPC"""
 
     rpcid: str
     args: List[str]
@@ -29,7 +29,7 @@ class PreparedBatchExecute(object):
 
     def __init__(
         self,
-        functions: List[BatchExecuteFunction],
+        rpcs: List[BatchExecuteRpc],
         host: str,
         app: str,
         user: str = None,
@@ -37,7 +37,7 @@ class PreparedBatchExecute(object):
         index: int = 0,
         rt: str = None,
     ) -> None:
-        """Prepare a ``batchexecute`` RPC
+        """Prepare a ``batchexecute`` request
 
         _The URL_: The URL is built from the ``host``, ``app``, and ``user`` parameters
         (each parameter can be obtained by inspecting an existing request):
@@ -57,9 +57,9 @@ class PreparedBatchExecute(object):
         for more information.
 
         Args:
-            functions (list): A list of functions to execute. Each function is a dictionary with 2 keys:
-                * ``rpcid``: The ``rpcid`` of the function to execute
-                * ``args``: A list of arguments to pass to the function
+            rpcs (list): A list of rpcs to execute. Each RPC is a dictionary with 2 keys:
+                * ``rpcid``: The ``rpcid`` of the RPC to execute
+                * ``args``: A list of arguments to pass to the RPC
             host (str): The host to send the request to
             app (str): The app to send the request to
             user (str): The user to send the request to (default: ``None``)
@@ -72,11 +72,11 @@ class PreparedBatchExecute(object):
 
         Raises:
             ValueError: If ``reqid`` is not a four digit number
-            ValueError: If any function is of an invalid format
+            ValueError: If any RPC is of an invalid format
 
         """
-        # Functions
-        self.functions = functions
+        # rpcs
+        self.rpcs = rpcs
 
         # URL components
         self.host = host
@@ -96,22 +96,22 @@ class PreparedBatchExecute(object):
         }
 
     @property
-    def functions(self) -> List[BatchExecuteFunction]:
-        """Get the functions to be called"""
-        return self._functions
+    def rpcs(self) -> List[BatchExecuteRpc]:
+        """Get the rpcs to be called"""
+        return self._rpcs
 
-    @functions.setter
-    def functions(self, functions: List[BatchExecuteFunction]) -> None:
-        """Set the functions to be called"""
-        # Functions must be a list
-        if not isinstance(functions, list):
-            raise ValueError("'functions' must be a list")
+    @rpcs.setter
+    def rpcs(self, rpcs: List[BatchExecuteRpc]) -> None:
+        """Set the rpcs to be called"""
+        # rpcs must be a list
+        if not isinstance(rpcs, list):
+            raise ValueError("'rpcs' must be a list")
 
-        # Validate each function
-        for fct in functions:
-            self._validate_function(fct)
+        # Validate each RPC
+        for fct in rpcs:
+            self._validate_rpc(fct)
 
-        self._functions = functions
+        self._rpcs = rpcs
 
     @property
     def url(self) -> str:
@@ -141,7 +141,7 @@ class PreparedBatchExecute(object):
         """Build the URL parameters for a ``batchexecute`` RPC"""
 
         params = {
-            "rpcids": ",".join(set([fct["rpcid"] for fct in self.functions])),
+            "rpcids": ",".join(set([fct["rpcid"] for fct in self.rpcs])),
             "_reqid": self._reqid + (self.index * 100000),
         }
 
@@ -159,12 +159,12 @@ class PreparedBatchExecute(object):
 
         ```
         [ # Outer array
-            [ # List of functions
-                [ # Function 'envelope'
-                    "<function rpcid>",
-                    "<function args stringified JSON>",
+            [ # List of rpcs
+                [ # RPC 'envelope'
+                    "<RPC rpcid>",
+                    "<RPC args stringified JSON>",
                     null,
-                    "<index of function or 'generic'>"
+                    "<index of RPC or 'generic'>"
                 ],
                 [...]
             ]
@@ -176,39 +176,39 @@ class PreparedBatchExecute(object):
 
         """
 
-        def _envelope(function: BatchExecuteFunction, function_idx: int = 0) -> list:
-            """Build an 'envelope' of a function
+        def _envelope(rpc: BatchExecuteRpc, rpc_idx: int = 0) -> list:
+            """Build an 'envelope' of a RPC
 
             Args:
-                function (dict): A dictionary with 2 keys:
-                    * ``rpcid``: The ``rpcid`` of the function to execute
-                    * ``args``: A list of arguments to pass to the function
-                function_idx (int): The index of the function in the list of functions
+                rpc (dict): A dictionary with 2 keys:
+                    * ``rpcid``: The ``rpcid`` of the RPC to execute
+                    * ``args``: A list of arguments to pass to the RPC
+                rpc_idx (int): The index of the RPC in the list of rpcs
 
             Returns:
-                list: The function 'envelope', of the form::
+                list: The RPC 'envelope', of the form::
 
                     [
-                        "<function rpcid>",
-                        "<function args stringified JSON>",
+                        "<RPC rpcid>",
+                        "<RPC args stringified JSON>",
                         None,
-                        <index of function or "generic" if index is 0>
+                        <index of RPC or "generic" if index is 0>
                     ]
 
             """
 
             return [
-                function["rpcid"],
-                json.dumps(function["args"], separators=(",", ":")),
+                rpc["rpcid"],
+                json.dumps(rpc["args"], separators=(",", ":")),
                 None,
-                str(function_idx) if function_idx > 0 else "generic",
+                str(rpc_idx) if rpc_idx > 0 else "generic",
             ]
 
-        # List of function 'envelopes' to request
+        # List of RPC 'envelopes' to request
         freq = []
 
-        for fct_idx, fct in enumerate(self.functions, start=1):
-            if len(self.functions) == 1:
+        for fct_idx, fct in enumerate(self.rpcs, start=1):
+            if len(self.rpcs) == 1:
                 fct_idx = 0
 
             freq.append(_envelope(fct, fct_idx))
@@ -218,26 +218,26 @@ class PreparedBatchExecute(object):
 
         return {"f.req": freq}
 
-    def _validate_function(self, function: BatchExecuteFunction) -> None:
-        """Validate a function format for a ``batchexecute`` RPC
+    def _validate_rpc(self, rpc: BatchExecuteRpc) -> None:
+        """Validate a RPC format for a ``batchexecute`` RPC
 
         Args:
-            function (dict): A dictionary with 2 keys:
-                rpcid: The ``rpcid`` of the function to execute
-                args: A list of arguments to send to the ``rpcid`` function
+            rpc (dict): A dictionary with 2 keys:
+                rpcid: The ``rpcid`` of the RPC to execute
+                args: A list of arguments to send to the ``rpcid`` RPC
 
         """
-        if not isinstance(function, dict):
-            raise ValueError("Function must be a dictionary")
+        if not isinstance(rpc, dict):
+            raise ValueError("RPC must be a dictionary")
 
-        if not "rpcid" in function:
-            raise ValueError("Function must have a 'rpcid' key")
+        if not "rpcid" in rpc:
+            raise ValueError("RPC must have a 'rpcid' key")
 
-        if not "args" in function:
-            raise ValueError("Function must have an 'args' key")
+        if not "args" in rpc:
+            raise ValueError("RPC must have an 'args' key")
 
-        if not isinstance(function["rpcid"], str):
-            raise ValueError("Function 'rpcid' must be a string")
+        if not isinstance(rpc["rpcid"], str):
+            raise ValueError("RPC 'rpcid' must be a string")
 
-        if not isinstance(function["args"], list):
-            raise ValueError("Function 'args' must be a list")
+        if not isinstance(rpc["args"], list):
+            raise ValueError("RPC 'args' must be a list")
