@@ -1,0 +1,26 @@
+[project]
+name = "pybatchexecute"
+description = "Library to ease interactions with Google's batchexecute batch RPC system"
+version = "0.1.0"
+authors = [
+    { name = "Pierre Nicolas Durette", email = "pndurette@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+
+dependencies = []
+
+[project.optional-dependencies]
+docs = ["pydoc-markdown ~= 4.6"]
+test = ["pytest >= 7.1.3,< 7.3.0"]
+
+[project.urls]
+homepage = "https://github.com/pndurette/pybatchexecute"
+documentation = "https://github.com/pndurette/pybatchexecute/blob/main/docs/README.md"
+repository = "https://github.com/pndurette/pybatchexecute"
+changelog = "https://github.com/pndurette/pybatchexecute/blob/main/CHANGELOG.md"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

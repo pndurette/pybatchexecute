@@ -1,0 +1,21 @@
+loaders:
+  - type: python
+    search_path: [pybatchexecute]
+    ignore_when_discovered: [ __init__, test_encode, test_decode]
+
+renderer:
+  type: markdown
+  
+  filename: docs/api.md
+
+  render_toc: true
+  render_toc_title: API Reference
+
+  source_linker:
+    type: github
+    repo: pndurette/pybatchexecute
+
+  # Display settings
+  descriptive_class_title: false
+  insert_header_anchors: false
+  render_module_header: false
