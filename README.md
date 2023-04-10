@@ -53,6 +53,7 @@ Use the `url`, `headers`, `params` and `data` attributes (optionally combined wi
 ... """
 >>>
 >>> # Decode response
+>>> # List of tuples (index, rpcid, response)
 >>> decode(raw)
 [(1, 'rpc1id', ['some', 'response1']), (2, 'rpc2id', ['some', 'response2'])]
 ```
