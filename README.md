@@ -62,8 +62,8 @@ Use the `url`, `headers`, `params` and `data` attributes (optionally combined wi
 
 See [docs/](docs/) for more:
 
-* [API reference](api.md)
-* [Response formats](response-formats.md)
+* [API reference](docs/api.md)
+* [Response formats](docs/response-formats.md)
 
 ## Disclaimer
 
