@@ -1,127 +1,147 @@
-import pytest
+import unittest
+from typing import List
 
-from gbatchexecute.encode import PreparedBatchExecute
-
-
-def test_init_url_output():
-    """URL parameter tests: building URLs from parameters"""
-
-    functions = [{"rpcid": "abc", "args": [123]}]
-
-    pbe1 = PreparedBatchExecute(functions, host="abc", app="def")
-    pbe2 = PreparedBatchExecute(functions, host="abc", app="def", user="ghi")
-
-    assert pbe1.url == "https://abc/_/def/data/batchexecute"
-    assert pbe2.url == "https://abc/u/ghi/_/def/data/batchexecute"
+from gbatchexecute.encode import BatchExecuteFunction, PreparedBatchExecute
 
 
-def test_init_functions():
-    """Functions parameter tests: functions are validated"""
-    # TODO: test for invalid functions
-    pass
+class TestPreparedBatchExecuteFunctions(unittest.TestCase):
+    def setUp(self):
+        self.url_params = {"host": "uvw", "app": "xyz"}
+
+    def test_set_valid_functions(self):
+        valid_functions: List[BatchExecuteFunction] = [
+            {"rpcid": "function1", "args": [1, 2]},
+            {"rpcid": "function2", "args": ["a", "b"]},
+        ]
+        pbe = PreparedBatchExecute(valid_functions, **self.url_params)
+        self.assertEqual(pbe.functions, valid_functions)
+
+    def test_set_invalid_functions_not_list(self):
+        with self.assertRaises(ValueError):
+            PreparedBatchExecute("not a list", **self.url_params)
+
+    def test_validate_function_not_dict(self):
+        pbe = PreparedBatchExecute([], **self.url_params)
+        with self.assertRaises(ValueError):
+            pbe._validate_function("not a dictionary")
+
+    def test_validate_function_missing_rpcid(self):
+        pbe = PreparedBatchExecute([], **self.url_params)
+        invalid_function: BatchExecuteFunction = {"args": [1, 2]}
+        with self.assertRaises(ValueError):
+            pbe._validate_function(invalid_function)
+
+    def test_validate_function_missing_args(self):
+        pbe = PreparedBatchExecute([], **self.url_params)
+        invalid_function: BatchExecuteFunction = {"rpcid": "function1"}
+        with self.assertRaises(ValueError):
+            pbe._validate_function(invalid_function)
+
+    def test_validate_function_invalid_rpcid_type(self):
+        pbe = PreparedBatchExecute([], **self.url_params)
+        # rpcid must be a string
+        invalid_function: BatchExecuteFunction = {"rpcid": 123, "args": [1, 2]}
+        with self.assertRaises(ValueError):
+            pbe._validate_function(invalid_function)
+
+    def test_validate_function_invalid_args_type(self):
+        pbe = PreparedBatchExecute([], **self.url_params)
+        # args must be a list
+        invalid_function: BatchExecuteFunction = {
+            "rpcid": "function1",
+            "args": "not a list",
+        }
+        with self.assertRaises(ValueError):
+            pbe._validate_function(invalid_function)
 
 
-def test_init_params():
-    """Query 'params' parameter tests: query 'params' and constraints"""
+class TestPreparedBatchExecuteURL(unittest.TestCase):
+    def setUp(self):
+        self.functions = [{"rpcid": "abc", "args": [123]}]
 
-    function1 = {"rpcid": "abc", "args": [123]}
-    function2 = {"rpcid": "def", "args": [123]}
+    def test_set_valid_url(self):
+        pbe = PreparedBatchExecute(self.functions, host="abc", app="def")
+        self.assertEqual(pbe.url, "https://abc/_/def/data/batchexecute")
 
-    url_params = {"host": "uvw", "app": "xyz"}
-
-    pbe1 = PreparedBatchExecute([function1, function2], **url_params)
-
-    # 'rpcids' is a join and the order is not garanteed
-    assert pbe1.params["rpcids"] == "abc,def" or pbe1.params["rpcids"] == "def,abc"
-
-    # '_reqid' is calculated with 'reqid' and 'idx':
-    # _reqid = reqid + (idx * 100000)
-
-    # a) explicit 'reqid' and 'idx'
-    #    i.e. _reqid = 1000 + (3 * 100000)
-    pbe2 = PreparedBatchExecute([function1], reqid=1000, index=3, **url_params)
-    assert pbe2.params["_reqid"] == 1000 + (3 * 100000)
-
-    # b) 'index' is 0 by default
-    #    i.e _reqid = 1000 + (0 * 100000)
-    pbe3 = PreparedBatchExecute([function1], reqid=1000, **url_params)
-    assert pbe3.params["_reqid"] == 1000 + (0 * 100000)
-
-    # c) 'reqid' is rand(1000, 9999) by default
-    #    i.e. _reqid = rand(1000, 9999) + (2 * 100000)
-    gbe4 = PreparedBatchExecute([function1], index=2, **url_params)
-    assert 200000 <= gbe4.params["_reqid"] <= 209999
-
-    # 'rt' is set (if not None)
-    pbe5 = PreparedBatchExecute([function1], rt="a", **url_params)
-    pbe6 = PreparedBatchExecute([function1], rt=None, **url_params)
-    assert pbe5.params["rt"] == "a"
-    assert "rt" not in pbe6.params
+    def test_set_valid_url_with_user(self):
+        pbe = PreparedBatchExecute(self.functions, host="abc", app="def", user="ghi")
+        self.assertEqual(pbe.url, "https://abc/u/ghi/_/def/data/batchexecute")
 
 
-# def test_envelope():
-#     """_envelope() (or frame) tests for a given payload used to determine 'f.req'"""
+class TestPreparedBatchExecuteParams(unittest.TestCase):
+    def setUp(self):
+        self.function1 = {"rpcid": "abc", "args": [123]}
+        self.function2 = {"rpcid": "def", "args": [123]}
 
-#     payload = gBatchPayload("abc", [123])
-#     gbe = gBatchExecute(payload, url="xyz")
+        self.url_params = {"host": "uvw", "app": "xyz"}
 
-#     # 1 payload (last elem: 'generic')
-#     assert gbe._envelope(payload, 0) == ["abc", "[123]", None, "generic"]
+    def test_rpcids(self):
+        """'rpcids' parameter tests: join of 'rpcid' values"""
+        pbe = PreparedBatchExecute([self.function1, self.function2], **self.url_params)
+        # 'rpcids' is a join and the order is not garanteed
+        self.assertIn(pbe.params["rpcids"], ["abc,def", "def,abc"])
 
-#     # > 1 payload (last elem: payload index)
-#     assert gbe._envelope(payload, 1) == ["abc", "[123]", None, "1"]
+    def test_reqid(self):
+        """'_reqid' parameter tests: 'reqid' + (index * 100000)"""
+        # a) explicit 'reqid' and 'idx'
+        #    i.e. _reqid = 1000 + (3 * 100000)
+        pbe1 = PreparedBatchExecute(
+            [self.function1], reqid=1000, index=3, **self.url_params
+        )
+        self.assertEqual(pbe1.params["_reqid"], 1000 + (3 * 100000))
 
+        # b) 'index' is 0 by default
+        #    i.e _reqid = 1000 + (0 * 100000)
+        pbe2 = PreparedBatchExecute([self.function1], reqid=1000, **self.url_params)
+        self.assertEqual(pbe2.params["_reqid"], 1000 + (0 * 100000))
 
-# def test_freq():
-#     """_freq data value tests, uses _envelope()"""
+        # c) 'reqid' is rand(1000, 9999) by default
+        #    i.e. _reqid = rand(1000, 9999) + (2 * 100000)
+        gbe3 = PreparedBatchExecute([self.function1], index=2, **self.url_params)
+        self.assertTrue(200000 <= gbe3.params["_reqid"] <= 209999)
 
-#     payload1 = gBatchPayload("abc", [123])
-#     payload2 = gBatchPayload("def", [123])
-
-#     gbe1 = gBatchExecute(payload1, url="xyz")
-#     gbe2 = gBatchExecute([payload1, payload2], url="xyz")
-
-#     assert gbe1._freq() == """[[["abc","[123]",null,"generic"]]]"""
-#     assert gbe2._freq() == """[[["abc","[123]",null,"1"],["def","[123]",null,"2"]]]"""
-
-
-# def test_init_data():
-#     """'data' tests: POST data passed to request, uses _freq"""
-
-#     payload = gBatchPayload("abc", [123])
-
-#     gbe1 = gBatchExecute(payload, url="xyz")
-#     assert gbe1.data == {"f.req": """[[["abc","[123]",null,"generic"]]]"""}
-
-#     # Custom data setter: required keys
-#     gbe4 = gBatchExecute(payload, url="xyz")
-
-#     with pytest.raises(AssertionError) as exc1:
-#         # missing 'f.req'
-#         gbe4.data = {}
-
-#     assert f"data is missing key 'f.req'" in str(exc1.value)
+    def test_rt(self):
+        """'rt' is set (if not None)"""
+        pbe1 = PreparedBatchExecute([self.function1], rt="a", **self.url_params)
+        pbe2 = PreparedBatchExecute([self.function1], rt=None, **self.url_params)
+        assert pbe1.params["rt"] == "a"
+        assert "rt" not in pbe2.params
 
 
-# def test_init_headers():
-#     """'headers' tests: default and custom headers"""
+class TestPreparedBatchExecuteExecuteData(unittest.TestCase):
+    def setUp(self):
+        self.function1 = {"rpcid": "abc", "args": [123]}
+        self.function2 = {"rpcid": "def", "args": [123]}
 
-#     payload = gBatchPayload("abc", [123])
+        self.url_params = {"host": "uvw", "app": "xyz"}
 
-#     # Default headers
-#     gbe1 = gBatchExecute(payload, url="xyz")
-#     assert gbe1.headers == {
-#         "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-#     }
+    def test_data_freq(self):
+        """'data' data value tests"""
+        pbe1 = PreparedBatchExecute([self.function1], **self.url_params)
+        pbe2 = PreparedBatchExecute([self.function1, self.function2], **self.url_params)
 
-#     # Additional headers
-#     gbe2 = gBatchExecute(payload, url="xyz", headers={"custom": 123})
-#     assert gbe2.headers == {
-#         "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-#         "custom": 123,
-#     }
+        # 1 function (last elem: 'generic')
+        assert pbe1.data["f.req"] == '[[["abc","[123]",null,"generic"]]]'
 
-#     # Custom headers setter
-#     gbe3 = gBatchExecute(payload, url="xyz")
-#     gbe3.headers = {"custom": 123}
-#     assert gbe3.headers == {"custom": 123}
+        # > 1 function (last elem: function index)
+        assert (
+            pbe2.data["f.req"]
+            == '[[["abc","[123]",null,"1"],["def","[123]",null,"2"]]]'
+        )
+
+
+class TestPreparedBatchExecuteExecuteHeaders(unittest.TestCase):
+    def setUp(self):
+        self.function = {"rpcid": "abc", "args": [123]}
+        self.url_params = {"host": "uvw", "app": "xyz"}
+
+    def test_headers(self):
+        """'headers' data value tests"""
+        pbe = PreparedBatchExecute([self.function], **self.url_params)
+        assert pbe.headers == {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+        }
+
+
+if __name__ == "__main__":
+    unittest.main()
