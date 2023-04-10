@@ -6,7 +6,7 @@ loaders:
 renderer:
   type: markdown
   
-  filename: docs/README.md
+  filename: docs/api.md
 
   render_toc: true
   render_toc_title: API Reference
