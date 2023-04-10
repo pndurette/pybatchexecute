@@ -1,6 +1,6 @@
 import unittest
 
-from gbatchexecute.decode import (BatchExecuteDecodeException,
+from pybatchexecute.decode import (BatchExecuteDecodeException,
                                   _decode_rt_compressed, _decode_rt_default,
                                   decode)
 

@@ -1,7 +1,7 @@
 import unittest
 from typing import List
 
-from gbatchexecute.encode import BatchExecuteFunction, PreparedBatchExecute
+from pybatchexecute.encode import BatchExecuteFunction, PreparedBatchExecute
 
 
 class TestPreparedBatchExecuteFunctions(unittest.TestCase):

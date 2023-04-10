@@ -1,6 +1,6 @@
 loaders:
   - type: python
-    search_path: [gbatchexecute]
+    search_path: [pybatchexecute]
     ignore_when_discovered: [ __init__, test_encode, test_decode]
 
 renderer:
@@ -13,7 +13,7 @@ renderer:
 
   source_linker:
     type: github
-    repo: pndurette/gbatchexecute
+    repo: pndurette/pybatchexecute
 
   # Display settings
   descriptive_class_title: false

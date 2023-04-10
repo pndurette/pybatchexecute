@@ -1,5 +1,5 @@
 [project]
-name = "gbatchexecute"
+name = "pybatchexecute"
 description = "Library to ease interactions with Google's batchexecute batch RPC system"
 version = "0.1.0"
 authors = [
@@ -16,10 +16,10 @@ docs = ["pydoc-markdown ~= 4.6"]
 test = ["pytest >= 7.1.3,< 7.3.0"]
 
 [project.urls]
-homepage = "https://github.com/pndurette/gbatchexecute"
-documentation = "https://github.com/pndurette/gbatchexecute/blob/main/docs/README.md"
-repository = "https://github.com/pndurette/gbatchexecute"
-changelog = "https://github.com/pndurette/gbatchexecute/blob/main/CHANGELOG.md"
+homepage = "https://github.com/pndurette/pybatchexecute"
+documentation = "https://github.com/pndurette/pybatchexecute/blob/main/docs/README.md"
+repository = "https://github.com/pndurette/pybatchexecute"
+changelog = "https://github.com/pndurette/pybatchexecute/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["setuptools", "wheel"]
