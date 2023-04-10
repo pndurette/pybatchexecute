@@ -1,8 +1,13 @@
-# gbatchexecute
+# pybatchexecute
 
-gbatchexecute is a Python module to ease interactions with Google's `batchexecute` batch RPC system. It is based on the research of **Ryan Kovatch** ([_Deciphering Google’s mysterious `batchexecute` system_](https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c)) and **Boudewijn van Groos** ([_November 2020 Google Translate API Changes_](https://github.com/Boudewijn26/gTTS-token/blob/master/docs/november-2020-translate-changes.md)).
+> Python package to ease interactions with Google's `batchexecute` batch RPC system. It assists in preparing requests for it and decoding the response.
 
-See Ryan Kovatch's [_Deciphering Google’s mysterious `batchexecute` system_](https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c) for an in-depth understanding of all the fields.
+This package codifies the research of Ryan Kovatch[^1] and Boudewijn van Groos[^2] about Google's `/batchexecute` endpoint used accross Google Web applications.
+
+[^1]: [Deciphering Google’s mysterious 'batchexecute' system](https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c)
+
+[^2]: [November 2020 Google Translate API Changes](https://github.com/Boudewijn26/gTTS-token/blob/master/docs/november-2020-translate-changes.md)
+
 
 ## Usage
 
@@ -12,33 +17,8 @@ hello
 
 ## Disclaimer
 
-This project is *not* affiliated with Google. Breaking upstream changes *can* occur without notice.
+This project is *not* affiliated with Google. It is intended for use in accordance with [Google's Terms of Service](https://policies.google.com/terms).
 
 ## Licence
 
 [The MIT License (MIT)](LICENSE) Copyright © 2023 Pierre Nicolas Durette
-
---
-
-payload: (rpcid='abc', args=[123])
-
-from gbatchexecute import encode, decode
-import gbatchexecute
-
-gbatchexecute.encode()
-gbatchexecute.decode()
-
-encode
-decode
-
-url
-params
-form_data
-headers
-
-gbe = gbatchexecute(...)
-
-request(url = gbe.url, params = gbe.params, data = gbe.data, headers = gbe.headers)
-
-class PreparedBatchExecute:
-    pass
