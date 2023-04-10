@@ -1,7 +1,10 @@
 name: Generate Docs
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      - '**.py'
+      - '!**/test_*.py'
 
 permissions:
   contents: write
