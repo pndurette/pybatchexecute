@@ -71,7 +71,7 @@ This project is *not* affiliated with Google. It is intended for use in accordan
 
 ## Licence
 
-[The MIT License (MIT)](LICENSE) Copyright © 2023 Pierre Nicolas Durette
+[The MIT License (MIT)](LICENSE) Copyright © 2023-2024 Pierre Nicolas Durette
 
 [^1]: [Deciphering Google’s mysterious 'batchexecute' system](https://kovatch.medium.com/deciphering-google-batchexecute-74991e4e446c)
 
