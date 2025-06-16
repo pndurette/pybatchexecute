@@ -27,7 +27,7 @@ jobs:
     - name: Generate docs
       run: pydoc-markdown
     - name: Push docs
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@v6
       with:
         commit_message: Generate docs
         file_pattern: docs/*
